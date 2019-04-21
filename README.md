@@ -6,8 +6,3 @@
 # How to run
 `` npm run dev ``
 
-### API documentation can be found on 
-https://documenter.getpostman.com/view/4395119/S1EQSxxF
-
-# Live Demo
-Go to http://muniverse.me:3343/ 
