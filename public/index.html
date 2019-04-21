@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Jekyll v3.8.5">
+    <title>Signin Template · Bootstrap</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js"
+        integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+
+    <!-- Custom styles for this template -->
+    <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="loader">
+        <div class="lds-dual-ring"></div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="container">
+                <form>
+                    <div class="form-group">
+                        <label for="exampleUsername">Username</label>
+                        <input type="text" class="form-control" id="exampleUsername" placeholder="Enter username">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Email address</label>
+                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                            placeholder="Enter email">
+                    </div>
+                    <div class="form-group">
+                        <label for="examplePhone">Phone Number</label>
+                        <input type="text" class="form-control" id="examplePhone" placeholder="Enter Phone Number">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Password</label>
+                        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                    </div>
+
+                    <button id="insert" class="btn btn-primary">Submit</button>
+                </form>
+                Output
+                <div id="output1">
+
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <div class="container">
+
+                <form>
+                    <div class="form-group">
+                        <label for="exampleInputEmail">Email address</label>
+                        <input type="email" class="form-control" id="exampleInputEmail" aria-describedby="emailHelp"
+                            placeholder="Enter email">
+                    </div>
+
+                    <button id="find" class="btn btn-primary">Find</button>
+                    <button id="delete" class="btn btn-primary">Delete</button>
+                </form>
+                Output
+
+                <div id="output2">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <p class="mt-5 mb-3 text-muted text-center">&copy; Vishal Choudhary</p>
+    </form>
+    <script>
+        $('#insert').click(function (e) {
+            e.preventDefault();
+            $('.loader').css('visibility', 'visible');
+            let data = {
+                userName: document.getElementById('exampleUsername').value,
+                emailId: document.getElementById('exampleInputEmail1').value,
+                phoneNo: document.getElementById('examplePhone').value,
+                password: document.getElementById('exampleInputPassword1').value,
+            }
+            console.log(data);
+            $.ajax({
+                url: 'http://localhost:3343/api/v1/user/insertRecord',
+                type: 'POST',
+                data: data,
+                success: function (results) {
+
+                    $('#output1').html(`
+                        <span><b>StatusCode: </b></span>${results.statusCode}<br/>
+                        <span><b>Message: </b></span>${JSON.stringify(results.msg)}<br/>
+                        <span><b>Data: </b></span>${JSON.stringify(results.data)}<br/>
+                    `)
+                    $('.loader').css('visibility', 'hidden');
+                    if (results.statusCode === 400)
+                        $('#output1').css('border-color', 'red')
+                    else {
+                        $('#output1').css('border-color', 'green')
+                    }
+                }
+            });
+        });
+        $('#find').click(function (e) {
+            e.preventDefault();
+            $('.loader').css('visibility', 'visible');
+            $.ajax({
+                url: 'http://localhost:3343/api/v1/user/searchRecord',
+                type: 'POST',
+                data: {
+                    emailId: $('#exampleInputEmail').val()
+                },
+                success: function (results) {
+
+                    $('.loader').css('visibility', 'hidden');
+                    if (results.statusCode === 400) {
+                        $('#output2').css('border-color', 'red')
+                        $('#output2').html(`
+                            <span><b>StatusCode: </b></span>${results.statusCode}<br/>
+                            <span><b>Message: </b></span>${JSON.stringify(results.msg)}<br/>
+                            <span><b>Data: </b></span>${JSON.stringify(results.data)}<br/>
+                        `)
+                    } else {
+                        $('#output2').css('border-color', 'green')
+                        $('#output2').html(`
+                            <span><b>StatusCode: </b></span>${results.statusCode}<br/>
+                            <span><b>Message: </b></span>${JSON.stringify(results.msg)}<br/>
+                            <span><b>Data: </b></span><br/>
+                            userName:${results.data.userName}<br/>
+                            emailId:${results.data.emailId}<br/>
+                            phoneNo:${results.data.phoneNo}<br/>
+                            password:${results.data.password}<br/>
+                            date:${results.data.dateTime}<br/>
+
+                        `)
+
+                    }
+                }
+            });
+        });
+        $('#delete').click(function (e) {
+            $('.loader').css('visibility', 'visible');
+            e.preventDefault();
+            $.ajax({
+                url: 'http://localhost:3343/api/v1/user/deleteRecord',
+                type: 'POST',
+                data: {
+                    emailId: $('#exampleInputEmail').val()
+                },
+                success: function (results) {
+
+                    $('.loader').css('visibility', 'hidden');
+                    $('#output2').html(`
+                        <span><b>StatusCode: </b></span>${results.statusCode}<br/>
+                        <span><b>Message: </b></span>${JSON.stringify(results.msg)}<br/>
+                        <span><b>Data: </b></span>${JSON.stringify(results.data)}<br/>
+                    `)
+                    if (results.statusCode === 400) {
+                        $('#output2').css('border-color', 'red')
+                    } else {
+                        $('#output2').css('border-color', 'green')
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
